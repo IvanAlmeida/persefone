@@ -12,7 +12,7 @@ from scipy import ndimage
 import multiprocessing as mp
 import scipy.interpolate
 from mpl_toolkits.mplot3d import Axes3D
-
+import matplotlib.cm as cm
 
 
 
@@ -175,13 +175,70 @@ i : index corresponding to frame you want to plot
    mlab.savefig('plot.'+str(i)+'.jpeg',size=(800,800))
 
 
+#Ivan's functions
+def pol2cartlin(r, phi, rho):
+   """
+Converts from polar to cartesian coordinates.
 
-
-
-
-
-
-
+>>> x,y=pol2cart(r,phi)
+   """
+   #Extracting parameters
+   r_min = numpy.amin(r)
+   r_max = numpy.amax(r)
+   phi_min = numpy.amin(phi)
+   phi_max = numpy.amax(phi)
+   #the future parameters
+   x_min = -r_max
+   x_max = r_max
+   y_min = -r_max
+   y_max = r_max
+   #useful definitions
+   r_step = (r_max-r_min)/len(r)
+   r0 = r_min + r_step
+   phi_step = (phi_max-phi_min)/len(phi)
+   phi0 = phi_min + phi_step
+   #if len(r) != len(phi), what to do? in the x and y steps
+   x_step = (x_max-x_min)/len(r)
+   x0 = x_min + x_step
+   y_step = (y_max-y_min)/len(r)
+   y0 = y_min + y_step    
+   #auxiliars
+   rho_new = [[0.01]*len(r)]*len(r)
+   #print(rho_new)
+   m_r = 0
+   ind =[]
+   #print(rho)
+   while(m_r<len(r)):
+       n_phi = 0
+       while(n_phi<len(phi)):
+           tmpx = (r0 + m_r*r_step)*numpy.cos(phi0+n_phi*phi_step)
+           tmpy = (r0 + m_r*r_step)*numpy.sin(phi0+n_phi*phi_step)
+           m_x = int((tmpx-x0)/x_step)
+           n_y = int((tmpy-y0)/y_step)
+           ind.append([m_x,n_y])
+           rho_new[m_x][n_y] = rho[m_r][n_phi]
+           #print(rho_new[m_r][n_phi],n_phi,m_r)
+           n_phi = n_phi+1
+       m_r = m_r+1
+       
+   #aux
+   i_x = 1
+   i_y = 1
+   x = [x0]
+   y = [y0]
+   while(i_x<len(r)):
+       x.append(x0 + i_x*x_step)
+       i_x = i_x+1
+   while(i_y<len(r)):
+       y.append(y0 + i_y*y_step)
+       i_y = i_y+1
+   x = numpy.array(x)
+   y = numpy.array(y)
+   rho_new = numpy.array(rho_new)
+   ind = numpy.array(ind)
+   print(ind)
+   return x, y, rho_new
+    
 
 
 class Pluto:
@@ -396,14 +453,19 @@ Creating a snapshot of PLUTO's simulation
           # to perform coordinate transformations
         cmap = 'Oranges'
         if(d.geometry=='POLAR'):
-            I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
-                  label1='x',label2='$y$',title='Density $\rho$ ',
-                  cbar=(True,'vertical'),polar=[True,True],vmin=-9,vmax=numpy.amax(d.rho),cmesh=cmap) #polar automatic conversion =D
-            #obj = self.pol2cart(n,lim)
+            #conversionp2c = pol2cartlin(d.x1,d.x2,d.rho)
+            #fake data:
+            a = d.x2
+            b = d.x1
+            A, B = numpy.meshgrid(a, b)
+            c = d.rho
+            #actual plotting
+            ax = pylab.subplot(111, polar=True)
+            ax.set_yticklabels([])
+            ctf = ax.contourf(a, b, c, cmap=cm.jet)
             pylab.title("t = %.2f" % (d.SimTime))
-            #pylab.quiver(obj.x1,obj.x2,obj.v1,obj.v2,color='k')
-            pylab.xlim(0,2*numpy.amax(d.x1))
-            pylab.ylim(-numpy.amax(d.x1),numpy.amax(d.x1))
+            pylab.colorbar(ctf)
+            pylab.tight_layout()
             print ("Done i= %i" % self.frame)
     
         if(d.geometry=='SPHERICAL'):
@@ -417,11 +479,10 @@ Creating a snapshot of PLUTO's simulation
             pylab.ylim(-lim,lim)
             pylab.tight_layout()
             print "Done i= %i" % self.frame
-        else:
+        if(d.geometry=='CARTESIAN'):
             I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
                        label1='x',label2='$y$',lw=lw,title=r'Density $\rho$ [Torus]',
-                  cbar=(True,'vertical'),vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap) #polar automatic conversion =D
-            
+                  cbar=(True,'vertical'),vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap)
             pylab.title("t = %.2f" % (d.SimTime))
             #pylab.quiver(obj.x1,obj.x2,obj.v1,obj.v2,color='k')
             pylab.xlim(numpy.amin(d.x1),numpy.amax(d.x1))
