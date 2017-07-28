@@ -514,7 +514,7 @@ Creating a snapshot of PLUTO's simulation
            #pylab.streamplot(self.x1,self.x2,self.v2,self.v1,color='k')
     
            pylab.tight_layout()
-        pylab.savefig('plot.'+str(self.frame)+'.png',dpi=400)
+        pylab.savefig('plot.'+str(self.frame).zfill(5)+'.png',dpi=400)
         #       pylab.show()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
