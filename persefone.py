@@ -176,74 +176,14 @@ i : index corresponding to frame you want to plot
 
 
 #Ivan's functions
-def pol2cartlin(r, phi, rho):
-   """
-Converts from polar to cartesian coordinates.
-
->>> x,y=pol2cart(r,phi)
-   """
-   #Extracting parameters
-   r_min = numpy.amin(r)
-   r_max = numpy.amax(r)
-   phi_min = numpy.amin(phi)
-   phi_max = numpy.amax(phi)
-   #the future parameters
-   x_min = -r_max
-   x_max = r_max
-   y_min = -r_max
-   y_max = r_max
-   #useful definitions
-   r_step = (r_max-r_min)/len(r)
-   r0 = r_min + r_step
-   phi_step = (phi_max-phi_min)/len(phi)
-   phi0 = phi_min + phi_step
-   #if len(r) != len(phi), what to do? in the x and y steps
-   x_step = (x_max-x_min)/len(r)
-   x0 = x_min + x_step
-   y_step = (y_max-y_min)/len(r)
-   y0 = y_min + y_step    
-   #auxiliars
-   rho_new = [[0.01]*len(r)]*len(r)
-   #print(rho_new)
-   m_r = 0
-   ind =[]
-   #print(rho)
-   while(m_r<len(r)):
-       n_phi = 0
-       while(n_phi<len(phi)):
-           tmpx = (r0 + m_r*r_step)*numpy.cos(phi0+n_phi*phi_step)
-           tmpy = (r0 + m_r*r_step)*numpy.sin(phi0+n_phi*phi_step)
-           m_x = int((tmpx-x0)/x_step)
-           n_y = int((tmpy-y0)/y_step)
-           ind.append([m_x,n_y])
-           rho_new[m_x][n_y] = rho[m_r][n_phi]
-           #print(rho_new[m_r][n_phi],n_phi,m_r)
-           n_phi = n_phi+1
-       m_r = m_r+1
-       
-   #aux
-   i_x = 1
-   i_y = 1
-   x = [x0]
-   y = [y0]
-   while(i_x<len(r)):
-       x.append(x0 + i_x*x_step)
-       i_x = i_x+1
-   while(i_y<len(r)):
-       y.append(y0 + i_y*y_step)
-       i_y = i_y+1
-   x = numpy.array(x)
-   y = numpy.array(y)
-   rho_new = numpy.array(rho_new)
-   ind = numpy.array(ind)
-   print(ind)
-   return x, y, rho_new
-
 def video(fname="movie.avi"):
    """
-A movie generation.
+Generates snapshots from a set of PLUTO's data and make a little movie with them.
+
+Obs.: fname should be a string "name.extension".
+
+>> persefone.video(fname = "name.extension")
    """
-   import fish
    import os, fnmatch
    import subprocess
    
@@ -267,8 +207,6 @@ A movie generation.
    
    #generating video using avconv   
    subprocess.call(["avconv", "-f", "image2", "-i", "%05d.png", fname])
-
-   
 
 
 class Persefone:
@@ -481,7 +419,7 @@ Creating a snapshot of PLUTO's simulation
         pylab.clf()
           # Depending on the geometry, calls the appropriate function
           # to perform coordinate transformations
-        cmap = 'Oranges'
+        cmap = 'Greys'
         if(d.geometry=='POLAR'):
             #conversionp2c = pol2cartlin(d.x1,d.x2,d.rho)
             #fake data:
