@@ -238,7 +238,37 @@ Converts from polar to cartesian coordinates.
    ind = numpy.array(ind)
    print(ind)
    return x, y, rho_new
-    
+
+def video(fname="movie.avi"):
+   """
+A movie generation.
+   """
+   import fish
+   import os, fnmatch
+   import subprocess
+   
+   # count the number of snapshots to create the movie
+   nfiles=0
+   for file in os.listdir('.'):
+      if fnmatch.fnmatch(file, 'rho*.dbl'):
+         nfiles=nfiles+1
+   
+   #Creating Snapshots
+   aux_vid=0
+   while(aux_vid < nfiles-1):
+      snap = Persefone(aux_vid)
+      snap.snapshot()
+      aux_vid = aux_vid+1 
+
+   #renaming
+   for filename in os.listdir('.'):
+     if filename.startswith("plot."):
+         os.rename(filename, filename[5:])
+   
+   #generating video using avconv   
+   subprocess.call(["avconv", "-f", "image2", "-i", "%05d.png", fname])
+
+   
 
 
 class Persefone:
