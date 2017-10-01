@@ -1,7 +1,7 @@
 Persefone
 ============
 
-Assorted methods and classes to handle and visualize the output of the PLUTO MHD code. Adaptation in develop of the PLUTO-tools.
+Assorted methods and classes to handle and visualize the output of the PLUTO MHD code. Adaptation in development of the PLUTO-tools.
 
 # Simple examples 
 	
@@ -59,12 +59,9 @@ This will create a movie file -- output.mp4
 
 #### More examples coming soon.
 
-# Full torus simulation and analysis
-
-Please see Jupyter notebook `torus_tutorial.ipynb`.
-
 # TODO
 
+- [ ] update torus analysis
 - [ ] compute total mass in volume
 - [ ] compute Mdot for a given radius
 - [ ] compute energy, a.m. 
