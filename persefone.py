@@ -271,8 +271,9 @@ class Persefone:
 	    if d.n3>1: self.mach3=self.v3/self.cs
 	    self.mach=self.speed/self.cs
 
+#AJEITAR AQUI!!!!
 	    # accretion rates
-	    self.getmdot()	# => self.mdot
+	    #self.getmdot()	# => self.mdot
 
 
     def getgamma(self):
@@ -332,19 +333,19 @@ class Persefone:
 	    # sound speed
 	    self.csnum=numpy.sqrt(pdiff)
 
-
-    def getmdot(self):
+#AJEITAR AQUI!!!!
+    #def getmdot(self):
 	    # compute mass accretion rate valid for any accretion flow
 	    # right now, this is only valid for polar 2d sims
 
 	    # arrays convenient for vectorization
-	    r,th = numpy.meshgrid(self.x1,self.x2)
-	    dr,dth = numpy.meshgrid(self.dx1,self.dx2)
+	    #r,th = numpy.meshgrid(self.x1,self.x2)
+	    #dr,dth = numpy.meshgrid(self.dx1,self.dx2)
 
 	    #x=2.*pi*d['rho'][2,:]*d['x1'][2]**2*sin(d['x2'])*d['v1'][2,:]*d['dx2']
-	    dmdot=2.*numpy.pi*self.rho*r.T**2*numpy.sin(th)*self.v1*dth.T
+	    #dmdot=2.*numpy.pi*self.rho*r.T**2*numpy.sin(th)*self.v1*dth.T
 
-	    self.mdot=dmdot.sum(1) # sums along phi axis
+	    #self.mdot=dmdot.sum(1) # sums along phi axis
      
     def snap(self,var=None,hor=None):
         d = self.pp
@@ -450,6 +451,16 @@ Creating a snapshot of PLUTO's simulation
         if(d.geometry=='CARTESIAN'):
             I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
                        label1='x',label2='$y$',lw=lw,title=r'Density $\rho$ [Torus]',
+                  cbar=(True,'vertical'),vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap)
+            pylab.title("t = %.2f" % (d.SimTime))
+            #pylab.quiver(obj.x1,obj.x2,obj.v1,obj.v2,color='k')
+            pylab.xlim(numpy.amin(d.x1),numpy.amax(d.x1))
+            pylab.ylim(numpy.amin(d.x2),numpy.amax(d.x2))
+            pylab.tight_layout()
+            print ("Done i= %i" % self.frame)
+        if(d.geometry=='CYLINDRICAL'):
+            I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
+                       label1='$r$',label2='$z$',lw=lw,title=r'Density $\rho$ [Torus]',
                   cbar=(True,'vertical'),vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap)
             pylab.title("t = %.2f" % (d.SimTime))
             #pylab.quiver(obj.x1,obj.x2,obj.v1,obj.v2,color='k')
