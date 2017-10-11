@@ -207,6 +207,7 @@ Obs.: fname should be a string "name.extension".
    
    #generating video using avconv   
    subprocess.call(["avconv", "-f", "image2", "-i", "%05d.png", fname])
+   #avconv -r 1 -i input.m2v -r 24 output.avi
 
 
 class Persefone:
@@ -409,7 +410,7 @@ class Persefone:
 
 #------------------------------------------------------------------------------------------------------------------------------------------
 #Ivan's editions     
-    def snapshot(self,var=None,hor=None):
+    def snapshot(self,var=None,hor=None,showfig='yes'):
         '''
 Creating a snapshot of PLUTO's simulation
         '''
@@ -424,6 +425,7 @@ Creating a snapshot of PLUTO's simulation
         if(d.geometry=='POLAR'):
             #conversionp2c = pol2cartlin(d.x1,d.x2,d.rho)
             #fake data:
+            #2d now
             a = d.x2
             b = d.x1
             A, B = numpy.meshgrid(a, b)
@@ -449,6 +451,7 @@ Creating a snapshot of PLUTO's simulation
             pylab.tight_layout()
             print "Done i= %i" % self.frame
         if(d.geometry=='CARTESIAN'):
+            #2d now
             I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
                        label1='x',label2='$y$',lw=lw,title=r'Density $\rho$ [Torus]',
                   cbar=(True,'vertical'),vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap)
@@ -494,6 +497,8 @@ Creating a snapshot of PLUTO's simulation
     
            pylab.tight_layout()
         pylab.savefig('plot.'+str(self.frame).zfill(5)+'.png',dpi=400)
+        if(showfig!='yes'):
+            pylab.close()
         #       pylab.show()
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
