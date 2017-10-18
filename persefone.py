@@ -176,7 +176,7 @@ i : index corresponding to frame you want to plot
 
 
 #Ivan's functions
-def video(fname="movie.avi"):
+def video(fname="movie.avi",snap_init=0, snap_end=0):
    """
 Generates snapshots from a set of PLUTO's data and make a little movie with them.
 
@@ -192,13 +192,15 @@ Obs.: fname should be a string "name.extension".
    for file in os.listdir('.'):
       if fnmatch.fnmatch(file, 'rho*.dbl'):
          nfiles=nfiles+1
-   
+   if((snap_end - 1) > nfiles):
+       snap_end = nfiles - 1   
+   if(snap_end == 0):
+       snap_end = nfiles - 1
    #Creating Snapshots
-   aux_vid=0
-   while(aux_vid < nfiles-1):
-      snap = Persefone(aux_vid)
-      snap.snapshot()
-      aux_vid = aux_vid+1 
+   while(snap_init < snap_end):
+      snap = Persefone(i=snap_init)
+      snap.snapshot(showfig='yes')
+      snap_init = snap_init+1 
 
    #renaming
    for filename in os.listdir('.'):
@@ -440,14 +442,16 @@ Creating a snapshot of PLUTO's simulation
             print ("Done i= %i" % self.frame)
     
         if(d.geometry=='SPHERICAL'):
+            #obj = pol2cart(d.x1,d.x2)
             I.pldisplay(d, numpy.log10(d.rho),x1=d.x1,x2=d.x2,
                   label1='R',label2='$z$',title=r'Density $\rho$ ',
-                  cbar=(True,'vertical'),polar=[True,False],vmin=-5,vmax=rhomax,cmesh=cmap) #polar automatic conversion =D
-            #obj = self.pol2cart(n,lim)
+                  cbar=(True,'vertical'),polar=[True,False],vmin=numpy.log10(numpy.amin(d.rho)),vmax=numpy.log10(numpy.amax(d.rho)),cmesh=cmap) #polar automatic conversion =D
+
             pylab.title("t = %.2f  " % (float(d.SimTime)/6.28318530717) + "$\\rho_{max}$ = %.3f" % numpy.max(self.pp.rho))
-            #pylab.quiver(obj.x1,obj.x2,obj.v1,obj.v2,color='k')
-            pylab.xlim(0,2*lim)
-            pylab.ylim(-lim,lim)
+            #pylab.xlim(0,numpy.amax(d.x1))
+            #pylab.ylim(-numpy.amax(d.x1),numpy.amax(d.x1))
+            pylab.xlim(0,2)
+            pylab.ylim(-1,1)
             pylab.tight_layout()
             print "Done i= %i" % self.frame
         if(d.geometry=='CARTESIAN'):
